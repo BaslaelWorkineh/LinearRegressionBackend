@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-import os
+from sklearn.metrics import r2_score
 from config import Config
 
 prediction_bp = Blueprint('prediction', __name__)
@@ -24,6 +24,9 @@ def result():
 
             model = LinearRegression()
             model.fit(X_train, Y_train)
+
+            Y_pred_test = model.predict(X_test)
+            r2 = r2_score(Y_test, Y_pred_test)
 
             request_data = request.json
 
@@ -54,7 +57,8 @@ def result():
             pred = round(pred[0], 2)
 
             response = {
-                'predicted_price': pred
+                'predicted_price': pred,
+                'model_accuracy': round(r2, 2)  
             }
 
             return jsonify(response)
